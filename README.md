@@ -151,9 +151,11 @@ Next comes the algorithm that updates our Q-Table. When an action is carried out
 
 <img src = "https://wikimedia.org/api/rest_v1/media/math/render/svg/7a2a11876f4a2bef1198beb780a769cfa5c21af3">
 
-`(value of taking action a in the previous step) = (value of taking action a in the previous step) + (expected incremental value in this step)`
+```
+(value of taking action a in the previous step) = (value of taking action a in the previous step) + (expected incremental value in this step)
+```
 
-If `(expected incremental value in this step)` is positive, that means [action a in the previous state s] led to good things in the future, so it increases the value of [action a in the previous state s] and makes action a more likely to be picked next time we encounter state s.
+If `(expected incremental value in this step)` is positive, that means **[action a in the previous state s]** led to good things in the future, so it increases the value of **[action a in the previous state s]** and makes action a more likely to be picked next time we encounter state s.
 
 In the code, the update statement is
 ```javascript
@@ -218,3 +220,11 @@ states[prev_state][prev_action] = old_value + alpha*(reward + discount*estimated
 reward = 0
 ```
 
+
+### Results
+
+Before any learning
+<img style="border-width:0" src="https://github.com/GerHarte/QPacman/blob/master/img/NoPriorLearning.gif">
+
+After about 5 hours
+<img style="border-width:0" src="https://github.com/GerHarte/QPacman/blob/master/img/5HoursLearning_v1.gif">

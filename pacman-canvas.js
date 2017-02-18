@@ -1528,7 +1528,7 @@ function checkAppCache() {
 			var blinky_dazzled = '(' + JSON.stringify(blinky['dazzled']) + ')'
 
 			// Concatenate all features
-            var statestring = blinky_direction + distance_from_blinky + surrounding_statestring + blinky_dazzled//pacman_statestring  + game_statestring + blinky_statestring //+ game_statestring;
+            var statestring = blinky_direction + distance_from_blinky + surrounding_statestring + blinky_dazzled
 
             //Remember what the last state was before setting the new state
             prev_state = hashed_state;
