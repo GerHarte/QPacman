@@ -54,13 +54,13 @@ The intuition behind this is roughly to say, 'Look back over all the times I was
 Implementation
 ===============
 
-*Actions*
+### Actions
 
 Defining the actions is the easy part - as above
 
 A = [do nothing, up, down, left, right]
 
-*State Space*
+### State Space
 
 A big consideration when working with Q-Learning is how to think about the state vector. The example given above was very fuzzy, didn't describe the whole state. In reality there are an enormous number of states that even a simple game like PACMAN can be in. 
 
@@ -81,7 +81,7 @@ I've converted each of these features to strings, concatenated them, and then ha
 
 With some rounding, this gives roughly 30 million possible states the game can be in. In reality this is a lot lower since some states won't occur (e.g. PACMAN will never be surrounded by 8 walls).
 
-*Rewards*
+### Rewards
 
 For rewards, I started by defining the reward PACMAN gets as just the game's score. This seemed to have a downside, that there was no feedback for taking a route with no pills, so he could get stuck circling in a local optimum. Instead I set a reward of -1 if he took a step that doesn't increase the score. That should eventually knock him out of the local optimum (I'm not sure if the discount rate in the algorithm makes this redundant...).
 
