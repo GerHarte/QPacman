@@ -35,7 +35,7 @@ As the game progresses, the 'state of the world' or just state, changes. The ini
 
 As time goes on, PACMAN moves, the ghosts move and pills get eaten, the current state changes. 
 
-<img style="border-width:0" src="https://github.com/GerHarte/QPacman/blob/master/img/StateChange.png" />
+<img style="border-width:0" src="https://github.com/GerHarte/QPacman/blob/master/img/ChangedState.png" />
 
 
 All possible states in the game can (sort of...) be mapped in a vector S.
