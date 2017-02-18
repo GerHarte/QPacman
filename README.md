@@ -1,17 +1,17 @@
 QPacman
 =============
 
-A simple implementation of the <a href="https://en.wikipedia.org/wiki/Q-learning">Q-Learning</a> algorithm in javascript that tries to learn how to optimally play PACMAN in an unsupervsed manner using Reinforcement Learning. 
+A simple implementation of the [Q-Learning](https://en.wikipedia.org/wiki/Q-learning) algorithm in javascript that tries to learn how to optimally play PACMAN in an unsupervsed manner using Reinforcement Learning. 
 
-The entire Javascript PACMAN game was developed by <a href="http://platzh1rsch.ch/"> Platzh1rsch </a> - and a more up-to-date verion is located here https://github.com/platzhersh/pacman-canvas and can be played here http://pacman.platzh1rsch.ch.
+The entire Javascript PACMAN game was developed by [Platzh1rsch](http://platzh1rsch.ch) - and a more up-to-date verion is located here https://github.com/platzhersh/pacman-canvas and can be played here http://pacman.platzh1rsch.ch.
 
 To Run
 ===============
 
 1. Clone the repo.
-2. Navigate **/QPacman/**
+2. Navigate to **/QPacman/**
 3. From the command line run `python -m SimpleHTTPServer 8000`
-4. Navigate to http://localhost:8000
+4. Navigate to [http://localhost:8000](http://localhost:8000)
 
 
 Q-Learning
