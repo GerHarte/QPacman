@@ -31,11 +31,11 @@ From the start, the game continues in cycles - at each point PACMAN needs to cho
 
 As the game progresses, the 'state of the world' or just state, changes. The initial state starts off with 4 ghosts in the centre, PACMAN in the middle left and pills evenly distributed around the grid.
 
-<img style="border-width:0" src="/img/InitialState.png" />
+<img style="border-width:0" src="https://github.com/GerHarte/QPacman/blob/master/img/InitialState.png" />
 
 As time goes on, PACMAN moves, the ghosts move and pills get eaten, the current state changes. 
 
-<img style="border-width:0" src="/img/StateChange.png" />
+<img style="border-width:0" src="https://github.com/GerHarte/QPacman/blob/master/img/StateChange.png" />
 
 
 All possible states in the game can (sort of...) be mapped in a vector S.
