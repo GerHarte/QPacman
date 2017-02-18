@@ -165,8 +165,8 @@ Next comes the algorithm that updates our Q-Table. When an action is carried out
 
 If `(expected incremental value in this step)` is positive, that means **[action a in the previous state s]** led to good things in the future, so it increases the value of **[action a in the previous state s]** and makes action a more likely to be picked next time we encounter state s.
 
-**Alpha** is a parameter for the learning rate - meaning the second part of the above equation will be dampend down and so updates will be very small. This means learning will be slow and steady.
-**Discount** is a parameter for the discount on future learning. This lets you emphasise future rewards in your update statements. If it's small or zero, then the update will only reflect the most recent reward. Higher values emphasize future rewards allowing for more long term learning.
+* **Alpha** is a parameter for the learning rate - meaning the second part of the above equation will be dampend down and so updates will be very small. This means learning will be slow and steady.
+* **Discount** is a parameter for the discount on future learning. This lets you emphasise future rewards in your update statements. If it's small or zero, then the update will only reflect the most recent reward. Higher values emphasize future rewards allowing for more long term learning.
 
 
 In the code, the update statement is
