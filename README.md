@@ -90,58 +90,58 @@ I've converted each of these features to strings, concatenated them, and then ha
 
 With some rounding, this gives roughly 30 million possible states the game can be in. In reality this is a lot lower since some states won't occur (e.g. PACMAN will never be surrounded by 8 walls).
 
-The to calculate the features sits in the Qlearn function:
+The to calculate the features sits in the qLearn function:
 ``` javascript
-           //Feature 1 - How far away Blinky is - Manhattan Distance
-            var distance_from_blinky = '(' + JSON.stringify(Math.abs(blinky_y - pacman_y) + Math.abs(blinky_x - pacman_x)) + ')'
+//Feature 1 - How far away Blinky is - Manhattan Distance
+var distance_from_blinky = '(' + JSON.stringify(Math.abs(blinky_y - pacman_y) + Math.abs(blinky_x - pacman_x)) + ')'
 
-            //Feature 2 - Describe PACMAN's surroundings
-			var surrounding_statestring = '(' +
-				JSON.stringify(game.map.posY[pacman_y-1].posX[pacman_x-1].type)+
-				JSON.stringify(game.map.posY[pacman_y-1].posX[pacman_x].type)+
-				JSON.stringify(game.map.posY[pacman_y-1].posX[pacman_x+1].type)+
+//Feature 2 - Describe PACMAN's surroundings
+var surrounding_statestring = '(' +
+	JSON.stringify(game.map.posY[pacman_y-1].posX[pacman_x-1].type)+
+	JSON.stringify(game.map.posY[pacman_y-1].posX[pacman_x].type)+
+	JSON.stringify(game.map.posY[pacman_y-1].posX[pacman_x+1].type)+
 
-				JSON.stringify(game.map.posY[pacman_y].posX[pacman_x-1].type)+
-				JSON.stringify(game.map.posY[pacman_y].posX[pacman_x+1].type)+
+	JSON.stringify(game.map.posY[pacman_y].posX[pacman_x-1].type)+
+	JSON.stringify(game.map.posY[pacman_y].posX[pacman_x+1].type)+
 
-				JSON.stringify(game.map.posY[pacman_y+1].posX[pacman_x-1].type)+
-				JSON.stringify(game.map.posY[pacman_y+1].posX[pacman_x].type)+
-				JSON.stringify(game.map.posY[pacman_y+1].posX[pacman_x+1].type) +
-				')'
+	JSON.stringify(game.map.posY[pacman_y+1].posX[pacman_x-1].type)+
+	JSON.stringify(game.map.posY[pacman_y+1].posX[pacman_x].type)+
+	JSON.stringify(game.map.posY[pacman_y+1].posX[pacman_x+1].type) +
+	')'
 
 
-			//Feature 3 - What direction is blinky 
-			var blinky_horiz_direction
-			if (pacman_x < blinky_x){
-				blinky_horiz_direction = 'right'
-			} else if (pacman_x > blinky_x){
-				blinky_horiz_direction = 'left'
-			} else {
-				blinky_horiz_direction = 'same'
-			}
+//Feature 3 - What direction is blinky 
+var blinky_horiz_direction
+if (pacman_x < blinky_x){
+	blinky_horiz_direction = 'right'
+} else if (pacman_x > blinky_x){
+	blinky_horiz_direction = 'left'
+} else {
+	blinky_horiz_direction = 'same'
+}
 
-			var blinky_vert_direction
-			if (pacman_y < blinky_y){
-				blinky_vert_direction = 'below'
-			} else if (pacman_y > blinky_y){
-				blinky_vert_direction = 'above'
-			} else {
-				blinky_vert_direction = 'same'
-			}
+var blinky_vert_direction
+if (pacman_y < blinky_y){
+	blinky_vert_direction = 'below'
+} else if (pacman_y > blinky_y){
+	blinky_vert_direction = 'above'
+} else {
+	blinky_vert_direction = 'same'
+}
 
-			var blinky_direction = '(' + blinky_horiz_direction +','+ blinky_vert_direction + ')'
+var blinky_direction = '(' + blinky_horiz_direction +','+ blinky_vert_direction + ')'
 
-			//Feature 4 - Is blinky dazzled?
-			var blinky_dazzled = '(' + JSON.stringify(blinky['dazzled']) + ')'
+//Feature 4 - Is blinky dazzled?
+var blinky_dazzled = '(' + JSON.stringify(blinky['dazzled']) + ')'
 
-			// Concatenate al features
-            var statestring = blinky_direction + distance_from_blinky + surrounding_statestring + blinky_dazzled//pacman_statestring  + game_statestring + blinky_statestring //+ game_statestring;
+// Concatenate al features
+var statestring = blinky_direction + distance_from_blinky + surrounding_statestring + blinky_dazzled//pacman_statestring  + game_statestring + blinky_statestring //+ game_statestring;
 
-            //Remember what the last state was before setting the new state
-            prev_state = hashed_state;
+//Remember what the last state was before setting the new state
+prev_state = hashed_state;
 
-            //Hash the state string to create an ID
-            hashed_state = statestring.hashCode();
+//Hash the state string to create an ID
+hashed_state = statestring.hashCode();
 ```
 
 ### Rewards
@@ -160,4 +160,70 @@ Other than that the rewards were closely aligned with the scores:
 Next comes the algorithm that updates our Q-Table - From wikipedia
 
 <img src = "https://wikimedia.org/api/rest_v1/media/math/render/svg/7a2a11876f4a2bef1198beb780a769cfa5c21af3">
+When an action is carried out, we update the reward element in our Q-Table
+
+In the code, the update statement is
+```javascript
+states[prev_state][prev_action] = old_value + alpha*(reward + discount*estimated_outcomes[action] - old_value); //[no_action,up,down,left,right]
+```
+
+The full code to calculate each part of the update statement
+
+``` javascript
+//If we haven't seen this state before, default all actions at that state to 0
+if(!(hashed_state in states)){ 
+	states[hashed_state] = [0,0,0,0,0]; //[no_action,up,down,left,right]
+}
+
+//Retrieve the payoff values for the current state
+var estimated_outcomes = states[hashed_state]
+
+//Get the highest payoff known for that state
+var max_action_value = Math.max.apply(Math,  estimated_outcomes); 
+//Get the action (or actions) corresponding to the maximum payoff
+	var max_action_ids = getAllIndexes(estimated_outcomes, max_action_value)
+
+	//Remember what the previous action was before determining the current action.
+prev_action = action;
+
+//If there is one clear winning action - do it, otherwise take a random action
+if(max_action_ids.length === 1){ 
+    action = max_action_ids // estimated_outcomes.indexOf(max_action_value); //find the best action for the previous state
+    // console.log('Best Action Taken - ' + ['nothing', 'up', 'down', 'left', 'right'][action]);
+} else {
+	//When taking random actions, make it more likely to continue straight
+	max_action_ids = [0,0,0,0,0,1,2,3,4] 
+	//Pick a random action
+    action = max_action_ids[Math.floor(Math.random()*max_action_ids.length)]; 
+    // console.log('Random Action Taken - ' + ['nothing', 'up', 'down', 'left', 'right'][action]);
+}
+
+
+
+//Carry out the best action
+switch (action)
+{
+    case 0:
+        break;
+    case 1:
+        pacman.directionWatcher.set(up);
+        break;
+    case 2:
+        pacman.directionWatcher.set(down);
+        break;
+    case 3:
+        pacman.directionWatcher.set(left);
+        break;
+    case 4:
+        pacman.directionWatcher.set(right);
+        break;
+}
+
+//What was the payoff in the last state - i.e. the Old Value
+old_value = states[prev_state][prev_action]
+//Update Action based on the Q-Learning update formula
+states[prev_state][prev_action] = old_value + alpha*(reward + discount*estimated_outcomes[action] - old_value); //[no_action,up,down,left,right]
+//Reset the reward to 0
+reward = 0
+```
 
