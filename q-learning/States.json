@@ -1,0 +1,37 @@
+Pacman:
+
+angle1: 0.25
+angle2: 1.75
+dirX: 0
+dirY: 0
+posX: 0
+posY: 180
+beastMode: falsebeast
+ModeTimer: 0
+frozen: false
+radius: 15
+speed: 5
+stuckX: 0
+stuckY: 0
+
+
+
+
+
+
+angle1: 1.25
+angle2: 0.75
+dirX: -1
+dirY: 0
+posX: 270
+posY: 150
+
+dazzled: false
+dead: false
+ghostHouse: true
+gridBaseX: 13
+gridBaseY: 0
+name: "blinky"
+speed: 3
+stop: false
+
