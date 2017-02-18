@@ -25,7 +25,7 @@ Q-Learning is a Reinforcement Learning technique that allows an agent to learn t
 
 Using PACMAN as an example, a list of actions can be defined as the moves pacman can make, possible actions can be mapped in a vector A
 
-A = [do nothing, up, down, left, right]
+`A = [do nothing, up, down, left, right]`
 
 From the start, the game continues in cycles - at each point PACMAN needs to choose one of these actions.
 
@@ -40,11 +40,20 @@ As time goes on, PACMAN moves, the ghosts move and pills get eaten, the current 
 
 All possible states in the game can (sort of...) be mapped in a vector S.
 
+```
 S = [pacman on the left in the middle and all pills intact and all ghosts in the centre box ....,
 	 pacman two pixels from the left in the middle and the first three pills eaten and blinky 5 pixels above the centre box...,
 	 ...]
+```
 
 The goal of Q-Learning is to create a table Q with one row for each state in S, and one column for each action in A. The values at each element in this table is essentially how valuable that action is (a), if you are currently in that state (s), given by a single number Q(s,a).
+
+Q = 
+| State        | Do Nothing           | Up  | Down  | Left  | Right  |
+| ------------- |:-------------:|:-----:|:-----:|:-----:|:-----:|
+| pacman on the left in the middle and all pills intact and all ghosts in the centre box ....     | 0 | 0 | 0  | 0  | 0  |
+| pacman two pixels from the left in the middle and the first three pills eaten and blinky 5 pixels above the centre box... | 0 | 0 | 0  | 0  | 0  |
+| ... | 0 | 0 | 0  | 0  | 0  |
 
 The values in this Q-Table correspond roughly to a notion of rewards PACMAN gets for good and bad outcomes.
 
@@ -92,6 +101,6 @@ Other than that the rewards were closely aligned with the scores:
 * Dying = -1000 (I added to penalise dying, doesn't normally decrement your score)
 
 
-*Q-learning*
+### Q-learning Algotithm
 
 Next comes the algorithm that updates our Q-Table
