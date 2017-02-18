@@ -862,9 +862,6 @@ function geronimo() {
 								game.pillCount--;
 								}
 
-							if (fieldAhead === "wall"){
-								s = -100
-							}
 							game.map.posY[gridY].posX[gridX].type = "null";
 							game.score.add(s);
                             reward = s;
@@ -875,7 +872,7 @@ function geronimo() {
 				if ((fieldAhead === "wall") || (fieldAhead === "door")) {
 					this.stuckX = this.dirX;
 					this.stuckY = this.dirY;
-                    reward = -10;
+                    reward = -100;
 					pacman.stop();
 					// get out of the wall
 					if ((this.stuckX == 1) && ((this.posX % 2*this.radius) != 0)) this.posX -= 5;
@@ -1488,33 +1485,10 @@ function checkAppCache() {
 
             i++;
 
-            // pacman.directionWatcher.set(right);
-            // var pacman_statestring = JSON.stringify(pacman);
-            // var blinky_statestring = JSON.stringify(blinky);
-            // var game_statestring = JSON.stringify(game['map']);
+            //Feature 1 - How far away Blinky is - Manhattan Distance
+            var distance_from_blinky = '(' + JSON.stringify(Math.abs(blinky_y - pacman_y) + Math.abs(blinky_x - pacman_x)) + ')'
 
-
-
-            var pacman_x = Math.min(16,Math.max(pacman.getGridPosX(), 1))
-            var pacman_y = Math.min(16,Math.max(pacman.getGridPosY(), 1))
-            var pacman_statestring = '(' + JSON.stringify(pacman_x) +  ',' + JSON.stringify(pacman_y) + ')'
-            console.log(pacman_statestring)
-
-            var blinky_x = Math.max(blinky.getGridPosX(), 1)
-            var blinky_y = Math.max(blinky.getGridPosY(), 1)
-            var blinky_statestring = '(' + JSON.stringify(blinky_x) +  ',' + JSON.stringify(blinky_y) + ', ' + JSON.stringify(blinky['dazzled']) + ')'
-            
-            var distance_from_blinky = '(' + JSON.stringify(Math.round(Math.sqrt((blinky_y - pacman_y)**2 + (blinky_x - pacman_x)**2), 10)) + ')'
-
-            // var pacman_statestring = JSON.stringify(Math.round(pacman['posX']/10)) +
-									 // JSON.stringify(Math.round(pacman['posY']/10));
-
-			// var blinky_statestring = JSON.stringify(Math.round(blinky['posX']/10)) +
-			// 						 JSON.stringify(Math.round(blinky['posY']/10))+
-			// 						 + JSON.stringify(blinky['dazzled']);
-
-			var game_statestring =  JSON.stringify(game['map']);
-
+            //Feature 2 - Describe PACMAN's surroundings
 			var surrounding_statestring = '(' +
 				JSON.stringify(game.map.posY[pacman_y-1].posX[pacman_x-1].type)+
 				JSON.stringify(game.map.posY[pacman_y-1].posX[pacman_x].type)+
@@ -1529,19 +1503,20 @@ function checkAppCache() {
 				')'
 
 
+			//Feature 3 - What direction is blinky 
 			var blinky_horiz_direction
-			if ((pacman_x < blinky_x) ){
+			if (pacman_x < blinky_x){
 				blinky_horiz_direction = 'right'
-			} else if ((pacman_x > blinky_x)){
+			} else if (pacman_x > blinky_x){
 				blinky_horiz_direction = 'left'
 			} else {
 				blinky_horiz_direction = 'same'
 			}
 
 			var blinky_vert_direction
-			if ((pacman_y < blinky_y) ){
+			if (pacman_y < blinky_y){
 				blinky_vert_direction = 'below'
-			} else if ((pacman_y > blinky_y)){
+			} else if (pacman_y > blinky_y){
 				blinky_vert_direction = 'above'
 			} else {
 				blinky_vert_direction = 'same'
@@ -1549,15 +1524,19 @@ function checkAppCache() {
 
 			var blinky_direction = '(' + blinky_horiz_direction +','+ blinky_vert_direction + ')'
 
+			//Feature 4 - Is blinky dazzled?
 			var blinky_dazzled = '(' + JSON.stringify(blinky['dazzled']) + ')'
 
+			// Concatenate all features
             var statestring = blinky_direction + distance_from_blinky + surrounding_statestring + blinky_dazzled//pacman_statestring  + game_statestring + blinky_statestring //+ game_statestring;
 
-            console.log(statestring)
-
+            //Remember what the last state was before setting the new state
             prev_state = hashed_state;
+
+            //Hash the state string to create an ID
             hashed_state = statestring.hashCode();
 
+            //Print one instance some objects for inspection
             if (i == 100){
             	console.log('statestring')
             	console.log(statestring);
@@ -1568,51 +1547,33 @@ function checkAppCache() {
             };
 
 
-            if(!(hashed_state in states)){ //We've seen the state before, carry out the best case of what happened last time
-                // console.log(statestring);
-            	// console.log('new state added ' + Object.keys(states).length);
-                // states[hashed_state] = [Math.floor(Math.random()*5),Math.floor(Math.random()*5),Math.floor(Math.random()*5),Math.floor(Math.random()*5),Math.floor(Math.random()*5)]; //[no_action,up,down,left,right] - default to random
-                states[hashed_state] = [0,0,0,0,0]; //[no_action,up,down,left,right] - default to 0
-            
+            //If we haven't seen this state before, default all actions at that state to 0
+            if(!(hashed_state in states)){ 
+            	states[hashed_state] = [0,0,0,0,0]; //[no_action,up,down,left,right]
             }
 
+            //Retrieve the payoff values for the current state
             var estimated_outcomes = states[hashed_state]
-            // console.log(Object.keys(states).length)
 
+            //Get the highest payoff known for that state
+            var max_action_value = Math.max.apply(Math,  estimated_outcomes); 
+            //Get the action (or actions) corresponding to the maximum payoff
+		 	var max_action_ids = getAllIndexes(estimated_outcomes, max_action_value)
 
-            // console.log(estimated_outcomes)
-            var max_action_value = Math.max.apply(Math,  estimated_outcomes); //Get the highest value known for that state
-            // console.log(max_action_value)
-            // var max_action_ties = $.grep(estimated_outcomes, function (elem) { return elem === max_action_value; })
-            var max_action_ids = getAllIndexes(estimated_outcomes, max_action_value)
-            // console.log(max_action_ids)
-            // var count_max_action_values =  max_action_ids.length; //find out if there's a tie
-            // console.log(count_max_action_values)
-
+		 	//Remember what the previous action was before determining the current action.
             prev_action = action;
-            if(max_action_ids.length === 1){ //if there's no tie
-                action = estimated_outcomes.indexOf(Math.max.apply(Math,  estimated_outcomes)); //find the best action for the previous state
-                // console.log('best action taken');
-            // } else if (max_action_ids.length < 5){
-            //     // max_action_ids = max_action_ids; // Add no action if not in tie or make more likely to do nothing
-            //     // max_action_ids = max_action_ids.length
-            //     // max_action_ids = max_action_ids.concat(Array(max_action_ids.length*4+1).join('0').split('').map(parseFloat))//4 times more likely to continue straight
-            //     action = max_action_ids[Math.floor(Math.random()*max_action_ids.length)]; //Pick a random action
-            	    console.log('Best Action Taken - ' + ['nothing', 'up', 'down', 'left', 'right'][action]);
-            //     // console.log(action);
-            // } 
-        	} else   {
-                // max_action_ids = max_action_ids; // Add no action if not in tie or make more likely to do nothing
-                // max_action_ids = max_action_ids.length
-                max_action_ids = [0,0,0,0,0,1,2,3,4] // more likely to continue straight
-                action = max_action_ids[Math.floor(Math.random()*max_action_ids.length)]; //Pick a random action
-                // console.log('random good action taken');
-                // console.log(action);
-                // console.log('Random Action Taken');
-                console.log('Random Action Taken - ' + ['nothing', 'up', 'down', 'left', 'right'][action]);
+
+            //If there is one clear winning action - do it, otherwise take a random action
+            if(max_action_ids.length === 1){ 
+                action = max_action_ids // estimated_outcomes.indexOf(max_action_value); //find the best action for the previous state
+			    // console.log('Best Action Taken - ' + ['nothing', 'up', 'down', 'left', 'right'][action]);
+        	} else {
+        		//When taking random actions, make it more likely to continue straight
+				max_action_ids = [0,0,0,0,0,1,2,3,4] 
+				//Pick a random action
+                action = max_action_ids[Math.floor(Math.random()*max_action_ids.length)]; 
+                // console.log('Random Action Taken - ' + ['nothing', 'up', 'down', 'left', 'right'][action]);
             }
-
-
 
             //Carry out the best action
             switch (action)
@@ -1633,10 +1594,11 @@ function checkAppCache() {
                     break;
             }
 
+            //What was the payoff in the last state - i.e. the Old Value
             old_value = states[prev_state][prev_action]
-            //Update Action
+            //Update Action based on the Q-Learning update formula
             states[prev_state][prev_action] = old_value + alpha*(reward + discount*estimated_outcomes[action] - old_value); //[no_action,up,down,left,right]
-            // console.log(states[prev_state][prev_action])
+            //Reset the reward to 0
             reward = 0
         }
 

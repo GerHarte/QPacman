@@ -6,16 +6,6 @@ A simple implementation of the <a href="https://en.wikipedia.org/wiki/Q-learning
 The entire Javascript PACMAN game was developed by <a href="http://platzh1rsch.ch/"> Platzh1rsch </a> - and a more up-to-date verion is located here https://github.com/platzhersh/pacman-canvas and can be played here http://pacman.platzh1rsch.ch.
 
 
-------
-
-License
-=======
-
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">
-
-
-------
-
 Q-Learning
 ===============
 
@@ -90,7 +80,7 @@ I've converted each of these features to strings, concatenated them, and then ha
 
 With some rounding, this gives roughly 30 million possible states the game can be in. In reality this is a lot lower since some states won't occur (e.g. PACMAN will never be surrounded by 8 walls).
 
-The to calculate the features sits in the qLearn function:
+The code to calculate the features sits in the qLearn function:
 ``` javascript
 //Feature 1 - How far away Blinky is - Manhattan Distance
 var distance_from_blinky = '(' + JSON.stringify(Math.abs(blinky_y - pacman_y) + Math.abs(blinky_x - pacman_x)) + ')'
@@ -134,7 +124,7 @@ var blinky_direction = '(' + blinky_horiz_direction +','+ blinky_vert_direction 
 //Feature 4 - Is blinky dazzled?
 var blinky_dazzled = '(' + JSON.stringify(blinky['dazzled']) + ')'
 
-// Concatenate al features
+// Concatenate all features
 var statestring = blinky_direction + distance_from_blinky + surrounding_statestring + blinky_dazzled//pacman_statestring  + game_statestring + blinky_statestring //+ game_statestring;
 
 //Remember what the last state was before setting the new state
@@ -157,10 +147,13 @@ Other than that the rewards were closely aligned with the scores:
 
 ### Q-learning Algotithm
 
-Next comes the algorithm that updates our Q-Table - From wikipedia
+Next comes the algorithm that updates our Q-Table. When an action is carried out, we update the reward element in our Q-Table based on this formula. (from Wikipedia)
 
 <img src = "https://wikimedia.org/api/rest_v1/media/math/render/svg/7a2a11876f4a2bef1198beb780a769cfa5c21af3">
-When an action is carried out, we update the reward element in our Q-Table
+
+`(value of taking action a in the previous step) = (value of taking action a in the previous step) + (expected incremental value in this step)`
+
+If `(expected incremental value in this step)` is positive, that means [action a in the previous state s] led to good things in the future, so it increases the value of [action a in the previous state s] and makes action a more likely to be picked next time we encounter state s.
 
 In the code, the update statement is
 ```javascript
@@ -197,8 +190,6 @@ if(max_action_ids.length === 1){
     action = max_action_ids[Math.floor(Math.random()*max_action_ids.length)]; 
     // console.log('Random Action Taken - ' + ['nothing', 'up', 'down', 'left', 'right'][action]);
 }
-
-
 
 //Carry out the best action
 switch (action)
