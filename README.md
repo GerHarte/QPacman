@@ -48,7 +48,7 @@ S = [pacman on the left in the middle and all pills intact and all ghosts in the
 
 The goal of Q-Learning is to create a table Q with one row for each state in S, and one column for each action in A. The values at each element in this table is essentially how valuable that action is (a), if you are currently in that state (s), given by a single number Q(s,a).
 
-Q = 
+
 | State        | Do Nothing           | Up  | Down  | Left  | Right  |
 | ------------- |:-------------:|:-----:|:-----:|:-----:|:-----:|
 | pacman on the left in the middle and all pills intact and all ghosts in the centre box ....     | 0 | 0 | 0  | 0  | 0  |
