@@ -55,11 +55,13 @@ Implementation
 ===============
 
 *Actions*
+
 Defining the actions is the easy part - as above
 
 A = [do nothing, up, down, left, right]
 
 *State Space*
+
 A big consideration when working with Q-Learning is how to think about the state vector. The example given above was very fuzzy, didn't describe the whole state. In reality there are an enormous number of states that even a simple game like PACMAN can be in. 
 
 If everything else is the same, is there any real difference if PACMAN is at pixel (0,0) versus pixel (0,1)? Looking back at what action to take, Q-learning would treat these as completely separate - though you should probably do the same thing at both since they are so close together. It might make more sense to consider anything within a 10 pixel box to be the same 'state'. The beneift of this is that you have completely reduced your state-space.
@@ -70,16 +72,17 @@ This is what makes learning things difficult, and what makes people particularly
 
 For a basic implementation like this we have to tell the system what the important factors to consider are, the balance is to give it enough relevant information, but not too much irrelevant information. I wanted to try and use only information that was available in the javascript objects in the game - after some trial and error I settled on the following factors to describe any given state. To simplify things I removed 3 of the ghosts and only left the Red one (blinky).
 
-*PACMAN's absolute distance away from Blinky rounded to the nearest integer. e.g. (9)
-*PACMAN's reletave location to blinky (above/below and left/right) e.g. [right, below]
-*PACMAN's immediate surroundings in all 8 adjacent boxes as a string e.g. [pill, powerpill, wall, wall, nothing, wall, pill pill]
-*Whether or not Blinky is in a dazzled state - we don't have to run away if is it. [true, false]
+* PACMAN's absolute distance away from Blinky rounded to the nearest integer. e.g. (9)
+* PACMAN's reletave location to blinky (above/below and left/right) e.g. [right, below]
+* PACMAN's immediate surroundings in all 8 adjacent boxes as a string e.g. [pill, powerpill, wall, wall, nothing, wall, pill pill]
+* Whether or not Blinky is in a dazzled state - we don't have to run away if is it. [true, false]
 
 I've converted each of these features to strings, concatenated them, and then hashed them into a number. This number should act as unique id for the state (ignoring some clashes due to the <a href = "https://en.wikipedia.org/wiki/Pigeonhole_principle">Pigeonhole Principle</a>)
 
 With some rounding, this gives roughly 30 million possible states the game can be in. In reality this is a lot lower since some states won't occur (e.g. PACMAN will never be surrounded by 8 walls).
 
 *Rewards*
+
 For rewards, I started by defining the reward PACMAN gets as just the game's score. This seemed to have a downside, that there was no feedback for taking a route with no pills, so he could get stuck circling in a local optimum. Instead I set a reward of -1 if he took a step that doesn't increase the score. That should eventually knock him out of the local optimum (I'm not sure if the discount rate in the algorithm makes this redundant...).
 
 Other than that the rewards were closely aligned with the scores:
