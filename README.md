@@ -67,7 +67,7 @@ Implementation
 
 Defining the actions is the easy part - as above
 
-A = [do nothing, up, down, left, right]
+`A = [do nothing, up, down, left, right]`
 
 ### State Space
 
@@ -90,6 +90,60 @@ I've converted each of these features to strings, concatenated them, and then ha
 
 With some rounding, this gives roughly 30 million possible states the game can be in. In reality this is a lot lower since some states won't occur (e.g. PACMAN will never be surrounded by 8 walls).
 
+The to calculate the features sits in the Qlearn function:
+``` javascript
+           //Feature 1 - How far away Blinky is - Manhattan Distance
+            var distance_from_blinky = '(' + JSON.stringify(Math.abs(blinky_y - pacman_y) + Math.abs(blinky_x - pacman_x)) + ')'
+
+            //Feature 2 - Describe PACMAN's surroundings
+			var surrounding_statestring = '(' +
+				JSON.stringify(game.map.posY[pacman_y-1].posX[pacman_x-1].type)+
+				JSON.stringify(game.map.posY[pacman_y-1].posX[pacman_x].type)+
+				JSON.stringify(game.map.posY[pacman_y-1].posX[pacman_x+1].type)+
+
+				JSON.stringify(game.map.posY[pacman_y].posX[pacman_x-1].type)+
+				JSON.stringify(game.map.posY[pacman_y].posX[pacman_x+1].type)+
+
+				JSON.stringify(game.map.posY[pacman_y+1].posX[pacman_x-1].type)+
+				JSON.stringify(game.map.posY[pacman_y+1].posX[pacman_x].type)+
+				JSON.stringify(game.map.posY[pacman_y+1].posX[pacman_x+1].type) +
+				')'
+
+
+			//Feature 3 - What direction is blinky 
+			var blinky_horiz_direction
+			if (pacman_x < blinky_x){
+				blinky_horiz_direction = 'right'
+			} else if (pacman_x > blinky_x){
+				blinky_horiz_direction = 'left'
+			} else {
+				blinky_horiz_direction = 'same'
+			}
+
+			var blinky_vert_direction
+			if (pacman_y < blinky_y){
+				blinky_vert_direction = 'below'
+			} else if (pacman_y > blinky_y){
+				blinky_vert_direction = 'above'
+			} else {
+				blinky_vert_direction = 'same'
+			}
+
+			var blinky_direction = '(' + blinky_horiz_direction +','+ blinky_vert_direction + ')'
+
+			//Feature 4 - Is blinky dazzled?
+			var blinky_dazzled = '(' + JSON.stringify(blinky['dazzled']) + ')'
+
+			// Concatenate al features
+            var statestring = blinky_direction + distance_from_blinky + surrounding_statestring + blinky_dazzled//pacman_statestring  + game_statestring + blinky_statestring //+ game_statestring;
+
+            //Remember what the last state was before setting the new state
+            prev_state = hashed_state;
+
+            //Hash the state string to create an ID
+            hashed_state = statestring.hashCode();
+```
+
 ### Rewards
 
 For rewards, I started by defining the reward PACMAN gets as just the game's score. This seemed to have a downside, that there was no feedback for taking a route with no pills, so he could get stuck circling in a local optimum. Instead I set a reward of -1 if he took a step that doesn't increase the score. That should eventually knock him out of the local optimum (I'm not sure if the discount rate in the algorithm makes this redundant...).
@@ -103,4 +157,7 @@ Other than that the rewards were closely aligned with the scores:
 
 ### Q-learning Algotithm
 
-Next comes the algorithm that updates our Q-Table
+Next comes the algorithm that updates our Q-Table - From wikipedia
+
+<img src = "https://wikimedia.org/api/rest_v1/media/math/render/svg/7a2a11876f4a2bef1198beb780a769cfa5c21af3">
+
