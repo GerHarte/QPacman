@@ -5,6 +5,14 @@ A simple implementation of the <a href="https://en.wikipedia.org/wiki/Q-learning
 
 The entire Javascript PACMAN game was developed by <a href="http://platzh1rsch.ch/"> Platzh1rsch </a> - and a more up-to-date verion is located here https://github.com/platzhersh/pacman-canvas and can be played here http://pacman.platzh1rsch.ch.
 
+To Run
+===============
+
+1. Clone the repo.
+2. Navigate **/QPacman/**
+3. From the command line run `python -m SimpleHTTPServer 8000`
+4. Navigate to http://localhost:8000
+
 
 Q-Learning
 ===============
@@ -157,6 +165,10 @@ Next comes the algorithm that updates our Q-Table. When an action is carried out
 
 If `(expected incremental value in this step)` is positive, that means **[action a in the previous state s]** led to good things in the future, so it increases the value of **[action a in the previous state s]** and makes action a more likely to be picked next time we encounter state s.
 
+**Alpha** is a parameter for the learning rate - meaning the second part of the above equation will be dampend down and so updates will be very small. This means learning will be slow and steady.
+**Discount** is a parameter for the discount on future learning. This lets you emphasise future rewards in your update statements. If it's small or zero, then the update will only reflect the most recent reward. Higher values emphasize future rewards allowing for more long term learning.
+
+
 In the code, the update statement is
 ```javascript
 states[prev_state][prev_action] = old_value + alpha*(reward + discount*estimated_outcomes[action] - old_value); //[no_action,up,down,left,right]
@@ -223,8 +235,19 @@ reward = 0
 
 ### Results
 
-Before any learning
+Before any learning - random movements, low scores
+
 <img style="border-width:0" src="https://github.com/GerHarte/QPacman/blob/master/img/NoPriorLearning.gif">
 
-After about 5 hours
+After about 5 hours - far from perfect, but has learned to follow a certain route from the start. Gets higher scores on average and seems to have learned to chase blinky when he's dazzled.
+
 <img style="border-width:0" src="https://github.com/GerHarte/QPacman/blob/master/img/5HoursLearning_v1.gif">
+
+
+### Features & Future Improvements
+
+* The web-page has input boxes for **Discount** and **Learning Rate**. This lets the user change the parameters during learning. Setting **Learning Rate** to 0 stops learning and continues the game with what has been learned so far.
+* Periodically exporting the Q-Table to a database.
+* Allow importing a Q-Table to start, read from a database.
+* Try to get to run in headless mode without needing a browser allowing it to run and train on an EC2 instance.
+* The learning features can always be improved.
